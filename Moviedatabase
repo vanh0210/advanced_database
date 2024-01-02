@@ -13,6 +13,7 @@ CREATE TABLE Movie (
   age_limitation INT,
   PRIMARY KEY (Movie_id)
 );
+
 -- Customer
 CREATE TABLE Customer (
   Customer_id INT NOT NULL AUTO_INCREMENT,
@@ -22,8 +23,10 @@ CREATE TABLE Customer (
   membership_card VARCHAR(255),
   PRIMARY KEY (Customer_id)
 );
--- Rating
+
 -- Booking
+-- Rating
+
 -- Movie theater
 -- Ticket
 -- Payment
