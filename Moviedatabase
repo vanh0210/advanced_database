@@ -1,7 +1,5 @@
-Hello
-Luutram day ne
+     --CREATE TABLE
 
-   --CREATE TABLE
 -- Movie
 CREATE TABLE Movie (
   Movie_id INT NOT NULL AUTO_INCREMENT,
@@ -31,4 +29,26 @@ CREATE TABLE Customer (
 -- Ticket
 -- Payment
 -- Room
+
   --INSERT VALUE
+INSERT INTO Movie (Movie_id, title,genres, released_date,running_time, language, age_limitation) 
+VALUES (  ,'Avatar',	,'2009-12-10','162','English',' '),
+       (   ,'Titanic','1997-11-18','194','English'	            ),
+      (    ,'The Avengers','2012-04-25','143','English',        ),	
+      (   ,'Jurassic World','2015-06-09','124',	'English',      ),
+      Furious 7		2015-04-01		137	
+Avengers: Age of Ultron		2015-04-22		141	
+Frozen		2013-11-27		102	
+Iron Man 3		2013-04-18		130	
+Minions		2015-06-17		91	
+Captain America: Civil War		2016-04-27		147	
+Transformers: Dark of the Moon		2011-06-28		154	
+The Lord of the Rings: The Return of the King		2003-12-01		201	
+Skyfall		2012-10-25		143
+Transformers: Age of Extinction		2014-06-25		165	
+The Dark Knight Rises		2012-07-16		165	
+Toy Story 3		2010-06-16		103	
+Pirates of the Caribbean: Dead Man’s Chest		2006-06-20		151	
+Pirates of the Caribbean: On Stranger Tides		2011-05-14		136	
+Alice in Wonderland		2010-03-03		108	
+The Hobbit: An Unexpected Journey		2012-11-26		169
