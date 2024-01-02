@@ -3,8 +3,25 @@ Luutram day ne
 
    --CREATE TABLE
 -- Movie
-CREATE TABLE Movie(
+CREATE TABLE Movie (
+  Movie_id INT NOT NULL AUTO_INCREMENT,
+  title VARCHAR(255),
+  genres VARCHAR(255),
+  released_date DATE,
+  running_time INT,
+  language VARCHAR(255),
+  age_limitation INT,
+  PRIMARY KEY (Movie_id)
+);
 -- Customer
+CREATE TABLE Customer (
+  Customer_id INT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(255) ,
+  email VARCHAR(255),
+  phone_number VARCHAR(255),
+  membership_card VARCHAR(255),
+  PRIMARY KEY (Customer_id)
+);
 -- Rating
 -- Booking
 -- Movie theater
