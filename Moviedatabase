@@ -26,9 +26,19 @@ CREATE TABLE Customer (
 -- Rating
 
 -- Movie theater
+CREATE TABLE Movie theater (
+movtheater_id INT NOT NULL AUTO_INCREMENT,
+location varchar(255),
+room varchar(255),
+theaterNum int not null,
+seating Capacity varchar(255),
+primary key(movtheater_id)
+);
 -- Ticket
 -- Payment
 -- Room
+-- employee
+-- manager
 
   --INSERT VALUE
 INSERT INTO Movie (Movie_id, title,genres, released_date,running_time, language, age_limitation) 
