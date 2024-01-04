@@ -1,44 +1,71 @@
      --CREATE TABLE
 
--- Movie
-CREATE TABLE Movie (
-  Movie_id INT NOT NULL AUTO_INCREMENT,
-  title VARCHAR(255),
-  genres VARCHAR(255),
-  released_date DATE,
-  running_time INT,
-  language VARCHAR(255),
-  age_limitation INT,
-  PRIMARY KEY (Movie_id)
-);
-
 -- Customer
 CREATE TABLE Customer (
-  Customer_id INT NOT NULL AUTO_INCREMENT,
-  name VARCHAR(255) ,
-  email VARCHAR(255),
-  phone_number VARCHAR(255),
-  membership_card VARCHAR(255),
-  PRIMARY KEY (Customer_id)
+  Customer_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  Name VARCHAR(255) ,
+  Email VARCHAR(255),
+  Phone_number VARCHAR(255),
+  Membership_card VARCHAR(255),  
 );
 
 -- Booking
--- Rating
+CREATE TABLE Booking (
+  BookingID INT NOT NULL PRIMARY KEY,
+  BookingDate DATE NOT NULL,
+  BookingTime TIME NOT NULL,
+  Foods VARCHAR(255) NOT NULL,
+  Quantity INT NOT NULL,
+  FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID)
+);
+
+-- Payment
+CREATE TABLE Payment (
+    PaymentID INT PRIMARY KEY,
+    PaymentMethod VARCHAR(255),
+    Amount DECIMAL(10,2),
+    Discount DECIMAL(10,2),
+    FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID)
+);
+
+-- Movie
+CREATE TABLE Movie (
+  Movie_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  Title VARCHAR(255),
+  Genres VARCHAR(255),
+  Released_date DATE,
+  Running_time INT,
+  Language VARCHAR(255),
+  Age_limitation INT,
+  FOREIGN KEY (BookingID) REFERENCES Booking(BookingID)
+);
 
 -- Movie theater
 CREATE TABLE Movie theater (
-movtheater_id INT NOT NULL AUTO_INCREMENT,
-location varchar(255),
-room varchar(255),
-theaterNum int not null,
-seating Capacity varchar(255),
-primary key(movtheater_id)
+   movtheater_id INT NOT NULL AUTO_INCREMENT,
+   Location varchar(255),
+   Room varchar(255),
+   TheaterNum int not null,
+   Seating Capacity varchar(255),
+   Primary key(movtheater_id)
 );
+
+--Room
+
+-- Rating
+
+-- Manager
+
+-- Employees
+
 -- Ticket
--- Payment
--- Room
--- employee
--- manager
+
+-- Movie_theater
+
+
+
+
+
 
   --INSERT VALUE
 INSERT INTO Movie (Movie_id, title,genres, released_date,running_time, language, age_limitation) 
