@@ -63,18 +63,50 @@ foreign key (movietheater_id) references movietheater(movietheater_id)
 
 -- Rating
 create table rating (
-rating_id int not null auto_increment,
+Rating_id int not null auto_increment,
 Customer_id int not null,
 reaction varchar(100),
 comments varchar(100),
-primary key (rating_id),
+primary key (Rating_id),
 foreign key (Customer_id) references Customer(Customer_id)
 );
+
 -- Manager
+CREATE TABLE Manager (
+manager_id INT not null AUTO_INCREMENT,
+managerName varchar(255),
+position varchar(255),
+address varchar(255),
+phoneNumber varchar(255),
+Primary key (manager_id)
+);
 
 -- Employees
+CREATE TABLE Employees (
+employee_id int not null AUTO_INCREMENT,
+employeeName varchar(255),
+gender varchar(255),
+position varchar(255),
+address varchar(255),
+phoneNumber varchar(10),
+manager_id INT not null,
+Primary key (employee_id),
+Foreign key (manager_id) references Manager(manager_id)
+);
 
 -- Ticket
+CREATE TABLE Tickets (
+  ticket_id INT NOT NULL AUTO_INCREMENT,
+  employee_id INT NOT NULL,
+  Customer_id INT NOT NULL,
+  ticketPrice INT NOT NULL,
+  ticketType VARCHAR(255) NOT NULL,
+  dateTime DATETIME NOT NULL,
+  location VARCHAR(255) NOT NULL,
+  PRIMARY KEY (ticket_id),
+  FOREIGN KEY (employee_id) REFERENCES Employees (employee_id),
+  FOREIGN KEY (Customer_id) REFERENCES Customer(Customer_id)
+);
 
 -- Movie_theater
 create table movie_theater (
