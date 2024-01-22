@@ -2,55 +2,70 @@ create database final;
 use final;
 
 -- CREATE TABLE
--- Customer
-CREATE TABLE Customer(
-  Customer_id varchar(255),
-  customerName VARCHAR(100),
-  gender varchar(255),
-  age varchar(255),
-  email VARCHAR(100),
-  phonenumber VARCHAR(255),
-  membership_card VARCHAR(255),
-  primary key (Customer_id) 
-);
-
--- Booking
-CREATE TABLE Booking (
-  Booking_id varchar(255) primary key,
-  Customer_id varchar(255),
-  bookingDate DATE NOT NULL,
-  bookingTime TIME NOT NULL,
-  foods VARCHAR(255) NOT NULL,
-  quantity INT NOT NULL,
-  FOREIGN KEY (Customer_id) REFERENCES Customer(Customer_id)
-);
 
 -- Payment
 CREATE TABLE Payment (
-    Payment_id varchar(255) PRIMARY KEY,
-    Customer_id varchar(255),
+    Payment_id varchar(255) not null PRIMARY KEY,
     paymentMethod VARCHAR(255),
     amount INT,
-    discount varchar(255),
-    FOREIGN KEY (Customer_id) REFERENCES Customer(Customer_id)
+    discount varchar(255)
 );
 
 -- Movie
+
 CREATE TABLE Movie (
   Movie_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  Booking_id varchar(255), 
   title VARCHAR(255),
   genres VARCHAR(255),
   released_date varchar(255),
   running_time INT,
   languages VARCHAR(255),
-  age_limitation varchar(255),
-  FOREIGN KEY (Booking_id) REFERENCES Booking(Booking_id)
+  age_limitation varchar(255)
 );
 
+-- Customer
+CREATE TABLE Customer(
+  Customer_id varchar(255) not null,
+  customerName VARCHAR(100) not null,
+  gender varchar(255),
+  age varchar(255),
+  email VARCHAR(100),
+  phonenumber VARCHAR(255),
+  membership_card VARCHAR(255),
+  primary key (Customer_id)
+);
+
+-- Booking
+CREATE TABLE Booking (
+  Booking_id varchar(255) primary key,
+  Customer_id varchar(255) not null,
+  Payment_id varchar(255) not null,
+  Movie_id INT not null,
+  bookingDate DATE,
+  bookingTime TIME,
+  foods VARCHAR(255),
+  quantity INT NOT NULL,
+  FOREIGN KEY (Customer_id) REFERENCES Customer(Customer_id),
+  FOREIGN KEY (Payment_id) REFERENCES Payment(Payment_id),
+  FOREIGN KEY (Movie_id) REFERENCES Movie(Movie_id)
+);
+
+-- rating
+create table rating (
+rating_id int not null auto_increment,
+Customer_id varchar(255) not null,
+Movie_id varchar(255) not null,
+star int,
+reaction varchar(100),
+comments varchar(100),
+primary key (rating_id),
+foreign key (Customer_id) references Customer(Customer_id)
+);
+
+
 create table Movietheater (
-Movietheater_id varchar(255),
-theatername varchar(100),
+Movietheater_id varchar(255) not null,
+theatername varchar(100) not null,
 location varchar(100),
 totalroom varchar(100),
 total_seat numeric(30),
@@ -58,8 +73,8 @@ primary key (Movietheater_id)
 );
 
 create table Room (
-Room_id varchar(255),
-Movietheater_id varchar(255),
+Room_id varchar(255) not null,
+Movietheater_id varchar(255) not null,
 roomName varchar(100),
 seatingNum varchar(100),
 seat_type varchar(100),
@@ -67,14 +82,6 @@ primary key (Room_id),
 foreign key (Movietheater_id) references Movietheater(Movietheater_id)
 );
 
-create table Rating (
-Rating_id int not null auto_increment,
-Customer_id varchar(255),
-reaction varchar(100),
-comments varchar(100),
-primary key (Rating_id),
-foreign key (Customer_id) references Customer(Customer_id)
-);
 
 create table Movie_theater (
 Movie_theater_id int not null auto_increment,
@@ -83,41 +90,68 @@ Movietheater_id varchar(255) references Movietheater(Movietheater_id),
 primary key (Movie_theater_id)
 );
 
-CREATE TABLE Manager (
-Manager_id INT not null AUTO_INCREMENT,
-managerName varchar(255),
-position varchar(255),
-gender varchar(255),
-address varchar(255),
-phoneNumber varchar(10),
-Primary key (Manager_id)
-);
-
 CREATE TABLE Employees (
-Employee_id varchar(255),
+Employee_id varchar(255) not null,
+Manager_id varchar(255),
 employeeName varchar(255),
 gender varchar(255),
 position varchar(255),
 address varchar(255),
 phoneNumber varchar(10),
-Manager_id INT,
 Primary key (Employee_id),
-Foreign key (Manager_id) references Manager(Manager_id)
+Constraint pk_self Foreign key (Manager_id) references Employees(Employee_id)
 );
 
 CREATE TABLE Tickets (
   Ticket_id INT NOT NULL AUTO_INCREMENT,
-  Customer_id varchar(255),
-  Employee_id varchar(255),
-  seatingType varchar(255),
+  Employee_id varchar(255) not null,
+  Booking_id varchar(255) not null,
+  Room_id varchar(255) not null,
   ticketPrice numeric(20),
   seatNumber VARCHAR(255) NOT NULL,
   dateTime DATETIME NOT NULL,
   location VARCHAR(255) NOT NULL,
   PRIMARY KEY (Ticket_id),
   FOREIGN KEY (Employee_id) REFERENCES Employees (Employee_id),
-  FOREIGN KEY (Customer_id) REFERENCES Customer(Customer_id)
+  FOREIGN KEY (Booking_id) REFERENCES Booking(Booking_id),
+  FOREIGN KEY (Room_id) REFERENCES Room(Room_id)
 );
+
+-- PAYMENT
+INSERT INTO Payment (Payment_id, paymentMethod,amount,discount)
+VALUES
+('P01', 'Internation credit card','2','10%'),
+('P02', 'Domestic credit card','2','7%'),
+('P03', 'Pay with e-wallets','1','5%'),
+('P04', 'Mobile banking','2','3%'),
+('P05', 'Pay by check online','3','12%'),
+('P06', 'Electronic funds transfers','1','5%'),
+('P07', 'Digital Wallets','1','5%'),
+('P08',  'Money Order','2','5%');
+
+-- MOVIE
+INSERT INTO Movie (Movie_id, title, genres, released_date, running_time, languages, age_limitation)
+VALUES 
+('01', 'Spiderman: Across the spider-verse', 'Adventure film','01-06-2021', '180', 'English with Vienamese subtitle','T20'),
+('02', 'Fast and Furious', 'Action film','19-05-2012', '181', 'English with Vietnamese subtitle', 'T16'),
+('03', 'Nobita va vung dat ly tuong', 'Cartoon','26-05-2015', '108', 'Japanese with Vietnamese/English subtitle','T13'),
+('04','Hoon Payoon', 'Horror film','02-06-2020','101', 'Thai with Vietnamese/English subtitle','T16'),
+('05','The little mermaid', 'Adventure film', '26-05-2015', '135', 'English with Vietnamese subtitle', 'T20'),
+('06','Ong Ke', 'Horror film','02-06-2021', '98', 'English with Vietnamese subtitle','T16'),
+('07', 'lat mat 6: Tam ve dinh menh', 'Action film','28-04-2020', '132', 'Vietnamese with English subtitle', 'T16'),
+('08', 'Guardians of the Galaxy', 'Mystery film','26-05-2015','149', 'English with Vietnamese subtitle', 'T13'),
+('09', 'Co be cuu hoa', 'Cartoon','12-05-2017', '92', 'English with Vietnamese subtitle', 'T13'),
+('10', 'Super Mario', 'Cartoon','07-04-2015', '99', 'English with Vietnamese subtitle', 'T13'),
+('11', 'The first slam dunk', 'Cartoon','14-04-2016', '124', 'Japanese with Vietnamese subtitle','T13'),
+('12', 'Transformer: Quai thu troi day', 'Science-fiction','26-05-2015','127', 'English with Vietnamese subtitle', 'T13'),
+('13', 'Flash', 'Adventure film','15-06-2013', '144', 'English with Vietnamese subtitle', 'T16'),
+('14', 'Mavka: Than thoai rung xanh', 'Cartoon','15-06-2016', '99', 'English with Vietnamese subtitle', 'T13'),
+('15', 'Indious: Quy quyet cua do vo dinh', 'Horror film', '06-07-2012','145', 'English with Vietnamese subtitle', 'T118'),
+('16', 'Be Trung: Nao loan Chau Phi', 'Cartoon','09-06-2016', '122', 'English with Vietnamese subtitle', 'T13'),
+('17', 'Avatar','Action','12-10-2009','162','English','20'),
+('18', 'Titanic','Romantic','11-11-1997','194','English','T18'),
+('19', 'The Avengers','Action','04-05-2012','143','English', 'T16'),
+('20', 'Frozen','Cartoon','12-04-2005','143','English', 'T13');
 
 -- INSERT CUSTOMER
 INSERT INTO Customer (Customer_id, customerName,gender,age,email,phonenumber,membership_card )
@@ -143,81 +177,71 @@ VALUES
 ('C19', 'Nguyen Van Hung', 'FM', '20', 'customer19@example.com', '012-256-377',999679),
 ('C20', 'Nguyen Thu Huong', 'FM', '20', 'customer20@example.com', '012-256-337',999689);
 
+
 -- Booking
-INSERT INTO Booking ( Booking_id,Customer_id,bookingDate,bookingTime,foods,quantity)
+INSERT INTO Booking ( Booking_id,Customer_id, Payment_id, Movie_id, bookingDate,bookingTime,foods,quantity)
 VALUES 
-('B01','C15','2023-12-23','14:34','Snacks','2'),
-('B02','C10','2023-10-21','18:03','Popcorn','3'),
-('B03','C15','2023-11-01','13:30','Pepsi','1'),
-('B04','C15','2023-01-23','11:37','SevenUp','2'),
-('B05','C15','2023-08-13','10:20','Pepsi','4'),
-('B06','C15','2023-02-14','07:30','Snacks','2'),
-('B07','C15','2023-06-28','09:36','Popcorn','1'),
-('B08','C15','2023-12-19','08:52','Snacks','3'),
-('B09','C15','2023-11-03','10:30','Pepsi','4'),
-('B10','C15','2023-07-08','16:29','Snacks','2'),
-('B11','C15','2023-06-07','14:35','SevenUp','1'),
-('B12','C15','2023-07-04','15:21','Popcorn','2'),
-('B13','C15','2023-03-05','07:37','Popcorn','3'),
-('B14','C15','2023-08-07','19:26','Snacks','1'),
-('B15','C15','2023-06-22','21:18','Pepsi','1'),
-('B16','C15','2023-04-24','16:18','Pepsi','2'),
-('B17','C15','2023-08-25','13:18','Pepsi','1'),
-('B18','C15','2023-04-29','17:18','Pepsi','2'),
-('B19','C15','2023-03-26','12:18','Pepsi','3'),
-('B20','C15','2023-04-25','23:18','Pepsi','1');
+('B01','C01', 'P01', 01,'2023-12-23','14:34','Snacks','2'),
+('B02','C02', 'P02', 02, '2023-10-21','18:03','Popcorn','3'),
+('B03','C03', 'P03', 03, '2023-11-01','13:30','Pepsi','1'),
+('B04','C04', 'P04', 04, '2023-01-23','11:37','SevenUp','2'),
+('B05','C05', 'P05', 05, '2023-08-13','10:20','Pepsi','4'),
+('B06','C06', 'P06', 06, '2023-02-14','07:30','Snacks','2'),
+('B07','C07', 'P07', 07, '2023-06-28','09:36','Popcorn','1'),
+('B08','C08', 'P08', 08, '2023-12-19','08:52','Snacks','3'),
+('B09','C09', 'P01', 09, '2023-11-03','10:30','Pepsi','4'),
+('B10','C10', 'P02', 10, '2023-07-08','16:29','Snacks','2'),
+('B11','C11', 'P05', 11, '2023-06-07','14:35','SevenUp','1'),
+('B12','C12', 'P08', 12, '2023-07-04','15:21','Popcorn','2'),
+('B13','C13', 'P04', 13, '2023-03-05','07:37','Popcorn','3'),
+('B14','C14', 'P03', 14, '2023-08-07','19:26','Snacks','1'),
+('B15','C15', 'P04', 15, '2023-06-22','21:18','Pepsi','1'),
+('B16','C16', 'P07', 16, '2023-04-24','16:18','Pepsi','2'),
+('B17','C17', 'P01', 17, '2023-08-25','13:18','Pepsi','1'),
+('B18','C18', 'P02', 18, '2023-04-29','17:18','Pepsi','2'),
+('B19','C19', 'P03', 19, '2023-03-26','12:18','Pepsi','3'),
+('B20','C20', 'P08', 20, '2023-04-25','23:18','Pepsi','1');
 
--- MOVIE
-INSERT INTO Movie (Movie_id,Booking_id, title, genres, released_date, running_time, languages, age_limitation)
-VALUES 
-('01','B01', 'Spiderman: Across the spider-verse', 'Adventure film','01-06-2021', '180', 'English with Vienamese subtitle','T20'),
-('02','B02', 'Fast and Furious', 'Action film','19-05-2012', '181', 'English with Vietnamese subtitle', 'T16'),
-('03','B03', 'Nobita va vung dat ly tuong', 'Cartoon','26-05-2015', '108', 'Japanese with Vietnamese/English subtitle','T13'),
-('04','B04','Hoon Payoon', 'Horror film','02-06-2020','101', 'Thai with Vietnamese/English subtitle','T16'),
-('05','B05','The little mermaid', 'Adventure film', '26-05-2022', '135', 'English with Vietnamese subtitle', 'T20'),
-('06','B06','Ong Ke', 'Horror film','02-06-2021', '98', 'English with Vietnamese subtitle','T16'),
-('07','B07', 'lat mat 6: Tam ve dinh menh', 'Action film','28-04-2020', '132', 'Vietnamese with English subtitle', 'T16'),
-('08','B08', 'Guardians of the Galaxy', 'Mystery film','03-05-2018','149', 'English with Vietnamese subtitle', 'T13'),
-('09','B09', 'Co be cuu hoa', 'Cartoon','12-05-2017', '92', 'English with Vietnamese subtitle', 'T13'),
-('10','B10', 'Super Mario', 'Cartoon','07-04-2015', '99', 'English with Vietnamese subtitle', 'T13'),
-('11','B11', 'The first slam dunk', 'Cartoon','14-04-2016', '124', 'Japanese with Vietnamese subtitle','T13'),
-('12','B12', 'Transformer: Quai thu troi day', 'Science-fiction','09-06-2014','127', 'English with Vietnamese subtitle', 'T13'),
-('13','B13', 'Flash', 'Adventure film','15-06-2013', '144', 'English with Vietnamese subtitle', 'T16'),
-('14','B14', 'Mavka: Than thoai rung xanh', 'Cartoon','15-06-2016', '99', 'English with Vietnamese subtitle', 'T13'),
-('15','B15', 'Indious: Quy quyet cua do vo dinh', 'Horror film', '06-07-2012','145', 'English with Vietnamese subtitle', 'T118'),
-('16','B16', 'Be Trung: Nao loan Chau Phi', 'Cartoon','09-06-2016', '122', 'English with Vietnamese subtitle', 'T13'),
-('17','B17', 'Avatar','Action','12-10-2009','162','English','20'),
-('18','B18', 'Titanic','Romantic','11-11-1997','194','English','T18'),
-('19','B19', 'The Avengers','Action','04-05-2012','143','English', 'T16'),
-('20','B20', 'Frozen','Cartoon','12-04-2005','143','English', 'T13');
+-- INSERT RATING
+insert into rating (rating_id, Customer_id, Movie_id, star, reaction, comments)
+values
+(01, 'C01', 01, 3, 'Like', 'Great experience!'),
+(02, 'C02', 02, 1, 'Dislike', 'Disappointing movie selection'),
+(03, 'C03', 03, 2, 'Neutral','Decent pricing, but limited snack options.'), 
+(04, 'C04', 04, 4 , 'Wow', 'Loved the movie!'),
+(05, 'C05', 05, 1, 'Dislike', 'Uncomfortable seating arrangements.'),
+(06, 'C06', 06, 5, 'Love', 'Great selection of movies.'),
+(07, 'C07', 07, 3, 'Like','Great value for the ticket price.'),
+(08, 'C08', 08, 5, 'Love','Excellent customer support.'),
+(09, 'C09', 09, 1, 'Dislike', 'Poor audio quality during the movie.'),
+(10, 'C10', 10, 4, 'Wow', 'Fast and easy ticket booking process.'),
+(11, 'C11', 11, 3, 'Like', 'Friendly staff at the theater.'),
+(12, 'C12', 12, 2, 'Neutral', 'Could improve the cleanliness of the theater.'),
+(13, 'C13', 13, 5, 'Love', 'Great value for the ticket price.'),
+(14, 'C14', 14, 1, 'Dislike', 'Late start for the movie, disappointing.'),
+(15, 'C15', 15, 2, 'Neutral', 'Courteous ushers assisting with seating.'),
+(16, 'C16', 16, 1, 'Dislike', 'Long queues at the ticket counter.'),
+(17, 'C17', 17, 1, 'Dislike', 'Movie start time was delayed.'),
+(18, 'C18', 18, 5,  'Love', 'Enjoyed the VIP seating options.'),
+(19, 'C19', 19, 5, 'Love', 'Great discounts for loyalty program members.'), 
+(20, 'C20', 20, 1, 'Dislike', 'Technical issues with the audio system');
 
--- PAYMENT
-INSERT INTO Payment (Payment_id,Customer_id, paymentMethod,amount,discount)
-VALUES
-('P01','C01', 'Internation credit card','2','10%'),
-('P02','C02', 'Domestic credit card','2','7%'),
-('P03','C03', 'Pay with e-wallets','1','5%'),
-('P04','C04', 'Mobile banking','2','3%'),
-('P05','C05', 'Pay by check online','3','12%'),
-('P06','C06', 'Electronic funds transfers','1','5%'),
-('P07','C07', 'Digital Wallets','1','5%'),
-('P08','C08',  'Money Order','2','5%');
 
 -- INSERT MOVIETHEATER
 insert into movietheater (movietheater_id, theatername, location, totalroom, total_seat)
 values
 ('M01', 'CGV Ba Trieu', 'Ha Noi', 5, 450),
 ('M02', 'CGV Vincom Da Nang', 'Da Nang', 7, 595),
-('M03', 'CGV Vincom Hai Phong', 'Hai Phong', 3, 225),
+('M03', 'CGV Vincom Hai Phong', 'Ha Noi', 3, 225),
 ('M04', 'CGV Vincom Ha Long', 'Quang Ninh', 8, 520),
-('M05', 'CGV Binh Duong Square', 'Binh Duong', 6, 504), 
+('M05', 'CGV Binh Duong Square', 'Ha Noi', 6, 504), 
 ('M06', 'CGV Vincom Dong Khoi', 'Ho Chi Minh', 9, 700),
 ('M07', 'CGV Vinh Centre', 'Nghe An', 8, 652),
 ('M08', 'CGV Ba Dinh', 'Ha Noi', 7, 605),
 ('M09', 'CGV Trang Tien', 'Ha Noi', 9, 750), 
 ('M10', 'CGV Long Bien', 'Ha Noi', 8, 600),
 ('M11', 'CGV Ho Guom Plaza', 'Ha Noi', 6, 516),
-('M12', 'CGV Thao Dien Pearl', 'Ho Chi Minh', 10, 850),
+('M12', 'CGV Thao Dien Pearl', 'Ha Noi', 10, 850),
 ('M13', 'CGV Vincom Go Vap', 'Ho Chi Minh', 9, 802),
 ('M14', 'CGV Hung Vuong Plaza', 'Ho Chi Minh', 8, 720),
 ('M15', 'CGV Phu Yen', 'Phu Yen', 7, 622),
@@ -252,29 +276,7 @@ values
 ('R19', 'M19', 'CGV Vincom Nguyen Chi Thanh 05', 88, 'VIP'),
 ('R20', 'M20', 'CGV Lotte Tay Ho 04', 83, 'VIP');
 
--- INSERT RATING
-insert into rating (rating_id, Customer_id, reaction, comments)
-values
-(01, 'C01', 'Like', 'Great experience!'),
-(02, 'C02', 'Dislike', 'Disappointing movie selection'),
-(03, 'C03','Neutral', 'Decent pricing, but limited snack options.'), 
-(04, 'C04','Wow', 'Loved the movie!'),
-(05, 'C05','Dislike', 'Uncomfortable seating arrangements.'),
-(06, 'C06','Love', 'Great selection of movies.'),
-(07, 'C07','Like', 'Great value for the ticket price.'),
-(08, 'C08','Love', 'Excellent customer support.'),
-(09, 'C09','Dislike', 'Poor audio quality during the movie.'),
-(10, 'C10','Wow', 'Fast and easy ticket booking process.'),
-(11, 'C11', 'Like', 'Friendly staff at the theater.'),
-(12, 'C12','Neutral', 'Could improve the cleanliness of the theater.'),
-(13, 'C13','Love', 'Great value for the ticket price.'),
-(14, 'C14','Dislike', 'Late start for the movie, disappointing.'),
-(15, 'C15','Neutral', 'Courteous ushers assisting with seating.'),
-(16, 'C16','Dislike', 'Long queues at the ticket counter.'),
-(17, 'C17','Dislike', 'Movie start time was delayed.'),
-(18, 'C18','Love', 'Enjoyed the VIP seating options.'),
-(19, 'C19','Love', 'Great discounts for loyalty program members.'), 
-(20, 'C20','Dislike', 'Technical issues with the audio system');
+
 
 -- INSERT MOVIE_THEATER
 insert into movie_theater (movie_theater_id, movie_id, movietheater_id)
@@ -298,77 +300,53 @@ values (01, 01, 'M01'),
 (18, 18, 'M18'),
 (19, 19, 'M19'),
 (20, 20, 'M20');
-
-
--- INSERT MANAGER
-INSERT INTO Manager (Manager_id, managerName, position, gender, address, phoneNumber)
-VALUES              (1, 'John Smith', 'CEO','Male', 'Singapore', '0977568342'),
-                    (2, 'Jane Doe', 'CCO', 'Female', 'USA', '0334452261'),
-                    (3, 'Bob Johnson', 'CFO', 'Male', 'Australia', '0123456789'),
-                    (4, 'David Canton','Managing Director', 'Male', 'Korean', '0456789123'),
-                    (5, 'Heydee Goe', 'CIO', 'Male', 'Japan', '0936482649'),
-                    (6, 'Elizabeth','CHRO','Female','UK', '0384629458'),
-                    (7, 'Mary Smith','CMO','Female','Canada', '0354926493'),
-                    (8, 'Paul Angen', 'CPO', 'Male', 'China', '0480867368'),
-                    (9, 'Stephen', 'CDO', 'Male', 'VietNam', '0274046483'),
-                    (10, 'William', 'CTO', 'Male', 'England', '0374982748'),
-                    (11, 'Richard', 'Founder', 'Female', 'Finland', '0934827492'),
-                    (12, 'Sarah Pau', 'Personnel manager', 'Female', 'Ireland', '0957325475'),
-                    (13, 'Mark Meium', 'Marketing manager', 'Male', 'Norway', '0474824837'),
-                    (14, 'Julia', 'Finance manager', 'Female', 'Scotland', '0475826432'),
-                    (15, 'Henry', 'Department manager', 'Male', 'Sweden', '0837263834'),
-                    (16, 'Goen Smith', 'Manager', 'Female', 'Thailand', '0194582364'),
-                    (17, 'Kea Mia', 'QA', 'Male', 'VietNam', '0482643893'),
-                    (18, 'Bob bum', 'QC', 'Female', 'Korean', '0482649723'),
-                    (19, 'Mia Pham', 'BA', 'Male', 'Malaysia', '0472094732'),
-                    (20, 'Make ka', 'PM', 'Female', 'China', '0482684622');
              
 -- INSERT EMPLOYEES
-INSERT INTO Employees (Employee_id, employeeName, position, gender, address, phoneNumber, Manager_id)
-VALUES               ('E01' ,'Anna Louis', 'Secretary', 'Female', 'Norway', '0397493760', 1),
-                     ('E02' ,'Manfred Smith ', 'Contracted Systems Developer', 'Male', 'Singapore', '0944637777', 2),
-                     ('E03' ,'Bush Chad', 'Assistant', 'Female', 'Myanma', '0394484837', 3),
-                     ('E04' ,'Frank Donald', 'Supervisor', 'Male', 'Korean', '0912348544', 4),
-                     ('E05' ,'George', 'Receptionist', 'Female', 'Japan', '0847395736', 5),
-                     ('E06' ,'James Roy ', 'Collaborator', 'Male', 'China', '0392775383', 6),
-                     ('E07' ,'Barney Conway', 'Ticket Sales', 'Female', 'Thailand', '0972846232', 7),
-                     ('E08' ,'Lily Titus', 'Cashier', 'Female', 'VietNam', '0937138237', 8),
-                     ('E09' , 'Zaria Guay', 'Accountant', 'Female', 'Australia', '0192837462', 9),
-                     ('E10' ,'Marcus ', 'guard', 'Male', 'Philipines', '0101238444', 10),
-                     ('E11' ,'Alice Drake', 'cleaning staff', 'Female', 'Angola', '0384758472', 11),
-                     ('E12' ,'Avantika', 'ticket inspector', 'Female', 'USA', '0836284763', 12),
-                     ('E13' ,'Farrah', 'Officer', 'Male', 'Indonesia', '0292928374', 13),
-                     ('E14' ,'Jyotsna', 'Labour', 'Male', 'Malaysia', '0485728495', 14),
-                     ('E15' ,'Vaidehi', 'Sales agent', 'Male', 'Canada', '0857368272', 15),
-                     ('E16', 'John Doe', 'Ticket Sales', 'Male', '123 Main St, Cityville', '555-1234', 16),
-                     ('E17', 'Jane Smith', 'Secretary', 'Female', '456 Oak St, Townsville', '555-5678', 17),
-                     ('E18', 'Bob Johnson', 'Accountant', 'Male', '789 Pine St, Villagetown', '555-9012', 18),
-                     ('E19', 'Mary Brown', 'Assistant', 'Female', '101 Elm St, Hamletville', '555-3456', 19),
-					 ('E20', 'Chris Davis', 'Security Manager', 'Male', '202 Cedar St, Countryside', '555-7890', 20);
+INSERT INTO Employees (Employee_id, Manager_id, employeeName, position, gender, address, phoneNumber)
+VALUES               ('E01', 'E01' ,'Anna Louis', 'Secretary', 'Female', 'Norway', '0397493760'),
+                     ('E02', 'E02' ,'Manfred Smith ', 'Contracted Systems Developer', 'Male', 'Singapore', '0944637777'),
+                     ('E03', null ,'Bush Chad', 'Assistant', 'Female', 'Myanma', '0394484837'),
+                     ('E04', 'E04' ,'Frank Donald', 'Supervisor', 'Male', 'Korean', '0912348544'),
+                     ('E05', null ,'George', 'Receptionist', 'Female', 'Japan', '0847395736'),
+                     ('E06', null ,'James Roy ', 'Collaborator', 'Male', 'China', '0392775383'),
+                     ('E07', 'E07' ,'Barney Conway', 'Ticket Sales', 'Female', 'Thailand', '0972846232'),
+                     ('E08', null ,'Lily Titus', 'Cashier', 'Female', 'VietNam', '0937138237'),
+                     ('E09', 'E09' , 'Zaria Guay', 'Accountant', 'Female', 'Australia', '0192837462'),
+                     ('E10', null ,'Marcus ', 'guard', 'Male', 'Philipines', '0101238444'),
+                     ('E11', 'E11' ,'Alice Drake', 'cleaning staff', 'Female', 'Angola', '0384758472'),
+                     ('E12', null ,'Avantika', 'ticket inspector', 'Female', 'USA', '0836284763'),
+                     ('E13', null ,'Farrah', 'Officer', 'Male', 'Indonesia', '0292928374'),
+                     ('E14', 'E14' ,'Jyotsna', 'Labour', 'Male', 'Malaysia', '0485728495'),
+                     ('E15', 'E15' ,'Vaidehi', 'Sales agent', 'Male', 'Canada', '0857368272'),
+                     ('E16', null, 'John Doe', 'Ticket Sales', 'Male', '123 Main St, Cityville', '555-1234'),
+                     ('E17', null, 'Jane Smith', 'Secretary', 'Female', '456 Oak St, Townsville', '555-5678'),
+                     ('E18', 'E18', 'Bob Johnson', 'Accountant', 'Male', '789 Pine St, Villagetown', '555-9012'),
+                     ('E19', 'E19', 'Mary Brown', 'Assistant', 'Female', '101 Elm St, Hamletville', '555-3456'),
+					 ('E20', 'E20', 'Chris Davis', 'Security Manager', 'Male', '202 Cedar St, Countryside', '555-7890');
                      
 				
  -- INSERT TICKETS
-INSERT INTO Tickets (Ticket_id, Customer_id, Employee_id, seatingType, ticketPrice, seatNumber, dateTime, location)
-VALUES              (1 ,'C01' ,'E01' , 'single', '65000', 'A1', '2024-01-04 20:11:00', 'CGV Ba Trieu'), 
-                    (2 ,'C02' ,'E02' , 'couple', '95000', 'C2', '2024-01-03 20:25:05', 'CGV Vincom Da Nang'), 
-                    (3 ,'C03' ,'E03' , 'VIP', '125000', 'E5', '2024-01-02 19:15:00', 'CGV Vincom Hai Phong'), 
-                    (4 ,'C04' ,'E04' , 'single', '65000', 'B6', '2024-01-04 15:20:10', 'CGV Vincom Ha Long'), 
-                    (5 ,'C05' ,'E05' , 'VIP', '125000', 'E7', '2024-01-01 10:21:30', 'CGV Binh Duong Square'), 
-                    (6 ,'C06' ,'E06' , 'couple', '95000', 'C6', '2023-12-04 21:15:00', 'CGV Vincom Dong Khoi'), 
-                    (7 ,'C07' ,'E07' , 'couple', '95000', 'B8', '2023-12-03 11:30:04', 'CGV Vinh Centre'), 
-                    (8 ,'C08' ,'E08' , 'single', '65000', 'B9', '2023-12-04 14:11:00', 'CGV Ba Dinh'), 
-                    (9 ,'C09' ,'E09' , 'VIP', '125000', 'E10', '2023-12-05 13:25:50', 'CGV Trang Tien'), 
-                    (10 ,'C10' ,'E10' , 'single', '65000', 'C4', '2023-12-06 15:40:00', 'CGV Long Bien'), 
-                    (11 ,'C11' ,'E11' , 'couple', '95000', 'C5', '2023-12-15 15:00:00', 'CGV Ho Guom Plaza'), 
-                    (12 ,'C12' ,'E12' , 'single', '65000', 'D7', '2023-12-20 20:31:00', 'CGV Thao Dien Pearl'), 
-                    (13 ,'C13' ,'E13' , 'couple', '95000', 'D8', '2024-01-05 18:04:00', 'CGV Vincom Go Vap'), 
-                    (14 ,'C14' ,'E14' , 'VIP', '125000', 'E9', '2024-01-06 19:27:30', 'CGV Hung Vuong Plaza'), 
-                    (15 ,'C15' ,'E15' , 'single', '65000', 'F10', '2024-01-07 14:14:05', 'CGV Phu Yen'), 
-                    (16 ,'C16' ,'E16' , 'couple', '95000', 'F12', '2024-01-07 20:17:40', 'CGV Vincom Thu Duc'), 
-                    (17 ,'C17' ,'E17' , 'couple', '95000', 'G5', '2024-01-05 17:25:00', 'CGV Bien Hoa'), 
-                    (18 ,'C18' ,'E18' , 'VIP', '125000', 'E8', '2024-01-02 10:30:00', 'CGV Vincom Tran Duy Hung'), 
-                    (19 ,'C19' ,'E19' , 'VIP', '125000', 'H2', '2024-01-04 11:11:11', 'CGV Phu Yen'), 
-                    (20 ,'C20' ,'E20' , 'couple ticket', '95000', 'H1', '2024-01-01 13:15:40', 'CGV Vincom Tran Duy Hung');
+INSERT INTO Tickets (Ticket_id, Employee_id, Booking_id, Room_id, ticketPrice, seatNumber, dateTime, location)
+VALUES              (1 ,'E01' , 'B01', 'R01', '65000', 'A1', '2024-01-04 20:11:00', 'CGV Ba Trieu'), 
+                    (2 ,'E02' , 'B02', 'R02', '95000', 'C2', '2024-01-03 20:25:05', 'CGV Vincom Da Nang'), 
+                    (3 ,'E03' , 'B03', 'R03', '125000', 'E5', '2024-01-02 19:15:00', 'CGV Vincom Hai Phong'), 
+                    (4 ,'E04' , 'B04', 'R04', '65000', 'B6', '2024-01-04 15:20:10', 'CGV Vincom Ha Long'), 
+                    (5 ,'E05' , 'B05', 'R05', '125000', 'E7', '2024-01-01 10:21:30', 'CGV Binh Duong Square'), 
+                    (6 ,'E06' , 'B06', 'R06', '95000', 'C6', '2023-12-04 21:15:00', 'CGV Vincom Dong Khoi'), 
+                    (7 ,'E07' , 'B07', 'R07', '95000', 'B8', '2023-12-03 11:30:04', 'CGV Vinh Centre'), 
+                    (8 ,'E08' , 'B08', 'R08', '65000', 'B9', '2023-12-04 14:11:00', 'CGV Ba Dinh'), 
+                    (9 ,'E09' , 'B09', 'R09', '125000', 'E10', '2023-12-05 13:25:50', 'CGV Trang Tien'), 
+                    (10 ,'E10' , 'B10', 'R10', '65000', 'C4', '2023-12-06 15:40:00', 'CGV Long Bien'), 
+                    (11 ,'E11' , 'B11', 'R11', '95000', 'C5', '2023-12-15 15:00:00', 'CGV Ho Guom Plaza'), 
+                    (12 ,'E12' , 'B12', 'R12', '65000', 'D7', '2023-12-20 20:31:00', 'CGV Thao Dien Pearl'), 
+                    (13 ,'E13' , 'B13', 'R13', '95000', 'D8', '2024-01-05 18:04:00', 'CGV Vincom Go Vap'), 
+                    (14 ,'E14' , 'B14', 'R14', '125000', 'E9', '2024-01-06 19:27:30', 'CGV Hung Vuong Plaza'), 
+                    (15 ,'E15' , 'B15', 'R15', '65000', 'F10', '2024-01-07 14:14:05', 'CGV Phu Yen'), 
+                    (16 ,'E16' , 'B16', 'R16', '95000', 'F12', '2024-01-07 20:17:40', 'CGV Vincom Thu Duc'), 
+                    (17 ,'E17' , 'B17', 'R17', '95000', 'G5', '2024-01-05 17:25:00', 'CGV Bien Hoa'), 
+                    (18 ,'E18' , 'B18', 'R18', '125000', 'E8', '2024-01-02 10:30:00', 'CGV Vincom Tran Duy Hung'), 
+                    (19 ,'E19' , 'B19', 'R19', '125000', 'H2', '2024-01-04 11:11:11', 'CGV Phu Yen'), 
+                    (20 ,'E20' , 'B20', 'R20', '95000', 'H1', '2024-01-01 13:15:40', 'CGV Vincom Tran Duy Hung');
                     
 -- Query
 
@@ -378,7 +356,316 @@ where genres like 'Adventure film'
 order by title asc;
 
 -- 2. How many VIP seats have been booked?
-Select 
+Select seat_type, count(*) AS total_VIP_ticket
+from room
+inner join Tickets
+on Tickets.room_id = room.room_id
+inner join Booking
+on Tickets.Booking_id = Booking.Booking_id
+where seat_type = 'VIP';
 
-             
-             
+-- 3. How many payment methods are most commonly used by customers?
+Select PaymentMethod, count(*) from Payment
+inner join Booking
+on Payment.Payment_id = Booking.Payment_id
+group by PaymentMethod
+having count(*) > 2
+Order by count(*) desc;
+
+-- 4. Show list of the top 5 movies with the longest running time?
+Select title, max(running_time) from Movie
+Group by title
+having max(running_time)
+Order by max(running_time) desc
+limit 5;
+
+-- 5. Show list of which customers  have  received 5% discount?
+Select customerName, gender, age, email, phonenumber, membership_card, discount from Customer
+inner join Booking
+on Customer.Customer_id = Booking.Customer_id
+inner join Payment
+on Booking.Payment_id = Payment.Payment_id
+where discount = '10%';
+
+-- 6. Show list of movies have the same release date.
+Select title, released_date, location from Movie
+inner join Movie_Theater
+on Movie.movie_id = Movie_Theater. movie_id
+inner join movietheater
+on Movie_Theater.movietheater_id = movietheater.movietheater_id
+where released_date = '26-05-2015';
+
+-- 7. How many movies rated “ Like” by customers? ***
+SELECT distinct title, count(Rating.reaction)
+FROM Movie
+inner JOIN Rating ON Movie.Movie_id = Rating.Movie_id
+WHERE Rating.reaction = 'Like'
+group by title
+ORDER BY count(rating.reaction) DESC;
+
+-- 8. List the name of employees who don't have a manager.
+SELECT *
+FROM Employees
+WHERE Manager_id IS NULL;
+
+-- 9. Show the language and number of movies released in that language?
+Select count(title)  as count_movie from Movie
+where languages = 'English with Vietnamese subtitle'
+order by count(title) desc;
+
+-- 10 List of the 2 customers who have made ticket reservations with the highest total booking amount?
+
+SELECT c.customerName, c.phoneNumber, c.membership_card, SUM(p.amount) as Amount
+FROM Booking b 
+JOIN Payment p ON b.Payment_id = p.Payment_id
+JOIN Customer c ON b.Customer_id = c.Customer_id
+GROUP BY b.Customer_id
+HAVING Amount = MAX(Amount)
+order by Max(amount) desc
+LIMIT 2;
+
+
+-- TRIGGER
+-- Create new table named moive
+Create table movie_new (
+movie_id INT not null,
+title varchar(255),
+descriptions varchar(255),
+director varchar(255),
+artist varchar(255)
+);
+
+-- AFFTER INSERT
+DELIMITER $$
+create trigger after_movie_new 
+after insert on movie_new
+for each row
+begin
+if new.movie_id is null then
+     INSERT INTO movie_new(movie_id, title, descriptions, director, artist)
+     VALUES (NEW.movie_id, NEW.title, NEW.descriptions, NEW.director, NEW.artist);
+     end if;
+end $$
+DELIMITER ;
+
+INSERT INTO movie_new (movie_id, title, descriptions, director, artist)
+VALUES   (2, 'Aquaman ', 'descriptions', 'James wan', 'Jason Momoa');
+
+-- Insert before information movie trigger 
+DELIMITER $$
+create trigger before_movie_new 
+before insert on movie_new
+for each row
+begin
+if new.movie_id is null then
+     INSERT INTO movie_new(movie_id, title, descriptions, director, artist)
+     VALUES (NEW.movie_id, NEW.title, NEW.descriptions, NEW.director, NEW.artist);
+     end if;
+end $$
+DELIMITER ;
+
+INSERT INTO movie_new (movie_id, title, descriptions, director, artist)
+VALUES   (1, 'Aquaman and the lost Kingdom', 'descriptions', 'James wan', 'Jason Momoa');
+
+show triggers;
+select * from movie_new;
+drop trigger before_movie_new;
+drop table movie_new;
+
+
+-- Create a after UPDATE trigger that 
+CREATE TABLE movie_changes (
+    Movie_id INT AUTO_INCREMENT PRIMARY KEY,
+    before_title VARCHAR(50) NOT NULL,
+    after_title varchar(50) not null,
+    changedat DATETIME DEFAULT NULL
+); 
+
+DELIMITER $$
+create trigger after_movie_update
+after update on Movie for each row
+begin
+     if old.title = new.title
+     Then
+         INSERT INTO movie_changes (movie_id, before_title, after_title, changedat)
+         VALUES (old.movie_id, old.title, new.title, now());
+	end if;
+end $$
+DELIMITER ;
+drop trigger after_movie_update;
+
+UPDATE Movie
+SET title = 'Kingdom'
+where Movie_id = '1';
+select*from Movie;
+select*from movie_changes;
+
+-- DELETE TRIGGER
+CREATE TABLE Payment_old (
+    Payment_id varchar(255) PRIMARY KEY,
+    paymentMethod VARCHAR(255),
+    amount INT
+);
+
+INSERT INTO Payment_old (Payment_id, paymentMethod,amount)
+VALUES
+('P01', 'Internation credit card',5),
+('P02', 'Domestic credit card',6),
+('P03', 'Pay with e-wallets',8),
+('P04', 'Mobile banking',10);
+create table payment_changes (
+	payment_id int,
+    total_amount VARCHAR(50) NOT NULL,
+    changedat DATETIME DEFAULT NULL
+); 
+
+insert into payment_changes ( payment_id, total_amount, changedat )
+VALUES (NULL, (SELECT SUM(amount) FROM Payment_old), NOW());
+
+create trigger after_payment_delete
+after delete on Payment_old for each row
+update payment_changes
+set total_amount = total_amount - old.amount;
+
+delete from Payment_old
+where payment_id = 'P03' ;
+
+
+-- 2. INDEX
+-- List gender customer is Male
+select customerName, email, membership_card from Customer
+where gender = 'M';
+
+create index gender
+ON Customer(gender);
+
+EXPLAIN SELECT customerName, email, membership_card
+FROM Customer 
+where gender = 'M';
+
+SHOW index from Customer;
+
+-- Tìm dateTime and room_id của 1 bộ phim có ticket_id=8 and movie location=Ha Noi
+
+SELECT t.Ticket_id, r.room_id, m.location, t.dateTime
+FROM Tickets t
+JOIN Room r ON t.room_id = r.room_id
+JOIN movietheater m ON r.movietheater_id = m.movietheater_id  
+WHERE t.ticket_id = '8' AND m.location = 'Ha Noi';    
+
+CREATE INDEX ticket_idx
+ON Tickets (ticket_id);
+
+CREATE INDEX location_idx
+ON movietheater (location);
+
+EXPLAIN SELECT t.Ticket_id, r.room_id, m.location, t.dateTime
+FROM Tickets t
+JOIN Room r ON t.room_id = r.room_id
+JOIN movietheater m ON r.movietheater_id = m.movietheater_id  
+WHERE t.ticket_id = '8' AND m.location = 'Ha Noi';   
+
+show index from Tickets;
+show index from movietheater;
+
+drop index location_idx ON movietheater;
+
+-- 3. VIEW
+-- Chỉ ra những bộ phim đang chiếu ở rạp Hồ Chí Minh
+select title, location from Movie
+inner join Movie_theater using(Movie_id)
+inner join Movietheater using(Movietheater_id);
+
+create view movie_location as
+select title, location from Movie
+inner join Movie_theater using(Movie_id)
+inner join Movietheater using(Movietheater_id)
+where location = 'Ho Chi Minh';
+
+select * from movie_location;
+
+-- 
+
+create view customer_star as
+SELECT customerName, title, star, comments FROM Customer 
+INNER JOIN Rating using (Customer_id)
+INNER JOIN Movie using (Movie_id)
+WHERE  star between 3 and 5;
+select * from customer_star;
+drop view customer_star;
+
+-- PROCEDURES
+-- có bao nhiêu bộ phim có thể loại là cartoon
+DELIMITER $$
+CREATE PROCEDURE GetMovieCountByGenre(
+    IN p_genre VARCHAR(255),
+    OUT p_movie_count INT
+)
+BEGIN
+    SELECT COUNT(*) INTO p_movie_count
+    FROM Movie
+    WHERE genres = p_genre;
+END $$
+DELIMITER ;
+drop procedure GetMovieCountByGenre;
+CALL GetMovieCountByGenre('cartoon', @movie_count);
+SELECT @movie_count AS movie_count;
+
+-- 
+
+drop procedure AddMovie;
+CALL AddMovie('The Great Movie', 'Drama, Action', '2022-01-01', 120, 'Vietnamese', 16, @movie_id, @success);
+SELECT @movie_id AS movie_id, @success AS success;
+
+DELIMITER $$
+CREATE PROCEDURE AddMovie(
+    IN p_title VARCHAR(255),
+    IN p_genres VARCHAR(255),
+    IN p_released_date DATE,
+    IN p_running_time INT,
+    IN p_languages VARCHAR(255),
+    IN p_age_limitation INT,
+    OUT p_movie_id INT,
+    OUT p_success BOOLEAN
+)
+BEGIN
+    START TRANSACTION;
+    INSERT INTO Movie (title, genres, released_date, running_time, languages, age_limitation)
+    VALUES (p_title, p_genres, p_released_date, p_running_time, p_languages, p_age_limitation);
+
+    SET p_movie_id = LAST_INSERT_ID();
+    IF p_movie_id IS NOT NULL THEN
+        SET p_success = TRUE;
+    ELSE
+        SET p_success = FALSE;
+    END IF;
+    IF p_success THEN
+        COMMIT;
+    ELSE
+        ROLLBACK;
+    END IF;
+END $$
+DELIMITER ;
+
+--
+drop procedure Customer_Rating;
+call Customer_Rating('C02', 4, 'Like', @rating_id, @average)
+delimiter $$
+create procedure Customer_Rating (
+in customer_id varchar(255),
+in star int,
+in reaction varchar(255),
+out rating_id varchar(255),
+out average decimal(10,2)
+)
+begin 
+SELECT c.customerName, AVG(r.star) AS average,
+CASE WHEN AVG(r.star) >= 4 THEN 'like'
+        ELSE 'neutral'
+    END AS like_status
+FROM Customer c
+Inner JOIN rating r ON c.Customer_id = r.Customer_id
+GROUP BY customerName
+order by average desc;
+end $$
+delimiter ;
